@@ -18,11 +18,11 @@ Use `pip install git+<link>` or download and run `pip install .`
 
 ## Usage
 
-### Dictionary generation
+### Useful functions
 Command line entry points
 `get_satellite_position` - Returns coordinates of satellite in desired output.
 
-`set_observer` - setup the information for the observer 
+`set_observer` - Setup the information for the observer 
 
 `check_satellite_position_at_observer` 
 
