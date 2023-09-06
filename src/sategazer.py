@@ -110,16 +110,17 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
 
     # create set of satellite
     all_satellite_sorted_by_names = {sat.name: sat for sat in all_satellites}
-    TLE_data = all_satellite_sorted_by_names[satellite_object.name]
+    satellite = all_satellite_sorted_by_names[satellite_object.name]
     
     observation_times = np.arange(observer_object.start_time, observer_object.end_time, observer_object.time_step).astype(datetime)
 
     # Defining location as a Topos class from skyfield
-
-    observer_location_skyfield = Topos(observer_object.location.lat.to_value(u.deg), 
-                              observer_object.location.lon.to_value(u.deg), 
-                              observer_object.location.height.to_value(u.m))
+    ## https://snyk.io/advisor/python/skyfield/functions/skyfield.api.Topos
+    observer_location_skyfield = Topos(latitude_degrees = observer_object.location.lat.to_value(u.deg), 
+                                        longitude_degrees = observer_object.location.lon.to_value(u.deg), 
+                                        elevation_m = observer_object.location.height.to_value(u.m))
     
+    print('observer_location_skyfield:', observer_location_skyfield)
     # list to store observed satellite positions
     observed_satellite_positions = []
     
@@ -127,28 +128,32 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
         # Creating a timescale object from skyfield library to convert datetime into skyfield time format
         timescale = load.timescale()
         print('Current_observation_time (datetime object):', current_observation_time)
+
         # creating skyfield appropriate current_observation_time
         current_observation_time_skyfield = timescale.utc(current_observation_time.year, current_observation_time.month, current_observation_time.day, current_observation_time.hour, current_observation_time.minute, current_observation_time.second)
-        print('UTC date and time (current_observation_time_skyfield):', current_observation_time_skyfield.utc_strftime())
+
         print('current_observation_time_skyfield (utc): ', current_observation_time_skyfield)
+        print('satellite: ', satellite)
         # TLE data normally contains  
-        topocentric_position = (TLE_data - observer_location_skyfield).at(current_observation_time_skyfield)
+   
+        satellite_position = (satellite - observer_location_skyfield).at(current_observation_time_skyfield)
+        print('satellite_position:', satellite_position)
 
         # Checking if satellite is in the field of view of the observer
 
-        altitude, azimuth, distance = topocentric_position.altaz()
+        satellite_altitude, satellite_azimuth, satellite_distance = satellite_position.altaz()
         # Compare to stellarium
-        print(f'azimuth: {azimuth}\naltitude: {altitude}')
-        if check_satellite_in_range(altitude.degrees, azimuth.degrees, observer_object.azimuth_range, observer_object.elevation_range):
-            observed_satellite_positions.append((current_observation_time_skyfield, altitude.degrees, azimuth.degrees))
+        print(f'azimuth: {satellite_azimuth}\naltitude: {satellite_altitude}')
+        if check_satellite_in_range(satellite_altitude.degrees, satellite_azimuth.degrees, observer_object.azimuth_range, observer_object.elevation_range):
+            observed_satellite_positions.append((current_observation_time_skyfield, satellite_altitude.degrees, satellite_azimuth.degrees))
 
     return observed_satellite_positions
 
 def main():
     
     # Range of observation using utc time
-    observation_start_time = datetime(2023, 9, 6, 16, 25, 0)
-    observation_end_time = datetime(2023, 9, 6, 16, 35, 0)
+    observation_start_time = datetime(2023, 9, 6, 21, 50, 0)
+    observation_end_time = datetime(2023, 9, 6, 21, 55, 0)
     observation_time_step = timedelta(minutes=5)
 
     # Creating curtin university observer object 
@@ -171,11 +176,12 @@ def main():
 
     for satellite in satellite_objects:
 
-        satellite_position_in_curtin_university_range = calculate_satellite_position_in_range(curtin_university_observer_object, satellite)
+        # satellite_position_in_curtin_university_range = calculate_satellite_position_in_range(curtin_university_observer_object, satellite)
+        # print(satellite_position_in_curtin_university_range)
 
         satellite_position_in_adelaide_university_range = calculate_satellite_position_in_range(adelaide_university_observer_object, satellite)
 
-        print(satellite_position_in_curtin_university_range)
+        
         print(satellite_position_in_adelaide_university_range)
 
     return 
