@@ -38,10 +38,13 @@ import astropy.units as u
 import pytz
 
 class Observer:
-    def __init__(self, name, latitude, longitude, elevation):
+    def __init__(self, name, latitude, longitude, elevation_from_sea):
         self.name = name
+        self.latitude = latitude
+        self.longitude = longitude 
+        self.elevation_from_sea = elevation_from_sea
 
-        self.location = EarthLocation(lat=latitude, lon=longitude, height=elevation)
+        # self.location = EarthLocation(lat=latitude, lon=longitude, height=elevation)
         self.start_time = None
         self.end_time = None
         self.time_step = None
@@ -101,6 +104,23 @@ def check_satellite_in_range(altitude, azimuth, azimuth_range, elevation_range):
 
     return is_in_azimuth_range and is_in_elevation_range
 
+def check_satellite_in_fov(altitude_difference, azimuth_difference, azimuth_fov_range, elevation_fov_range):
+    """Checks if satellite is within the field of view 
+
+    Args:
+        altitude_difference (decimal degrees): represents degree difference between observer and space object in alitude
+        azimuth_difference (decimal degrees): represents degree difference between observer and space object in alitude
+        azimuth_fov_range (float): decimal degree range for fov
+        elevation_fov_range (float): decimal degree range for fov
+
+    Returns:
+        _type_: _description_
+    """    
+    is_in_altitude_fov = altitude_difference <= 0.5*azimuth_fov_range
+    is_in_azimuth_fov = azimuth_difference <= 0.5*elevation_fov_range
+
+    return is_in_altitude_fov and is_in_azimuth_fov
+
 def calculate_satellite_position_in_range(observer_object, satellite_object):
 
     # url for satellite object in the TLE format
@@ -116,11 +136,11 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
 
     # Defining location as a Topos class from skyfield
     ## https://snyk.io/advisor/python/skyfield/functions/skyfield.api.Topos
-    observer_location_skyfield = Topos(latitude_degrees = observer_object.location.lat.to_value(u.deg), 
-                                        longitude_degrees = observer_object.location.lon.to_value(u.deg), 
-                                        elevation_m = observer_object.location.height.to_value(u.m))
+    observer = Topos(latitude_degrees = observer_object.latitude, 
+                                        longitude_degrees = observer_object.longitude, 
+                                        elevation_m = observer_object.elevation_from_sea)
     
-    print('observer_location_skyfield:', observer_location_skyfield)
+    print('observer:', observer)
     # list to store observed satellite positions
     observed_satellite_positions = []
     
@@ -136,22 +156,21 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
         print('satellite: ', satellite)
         # TLE data normally contains  
    
-        satellite_position = (satellite - observer_location_skyfield).at(current_observation_time_skyfield)
-        print('satellite_position:', satellite_position)
+        difference = (satellite - observer).at(current_observation_time_skyfield)
+        print('difference:', difference)
 
         # Checking if satellite is in the field of view of the observer
 
-        satellite_altitude, satellite_azimuth, satellite_distance = satellite_position.altaz()
-        # Compare to stellarium
-        print(f'azimuth: {satellite_azimuth}\naltitude: {satellite_altitude}')
-        if check_satellite_in_range(satellite_altitude.degrees, satellite_azimuth.degrees, observer_object.azimuth_range, observer_object.elevation_range):
-            observed_satellite_positions.append((current_observation_time_skyfield, satellite_altitude.degrees, satellite_azimuth.degrees))
+        altitude_difference, azimuth_difference, distance_difference = difference.altaz()
+
+        if check_satellite_in_fov(altitude_difference.degrees, azimuth_difference.degrees, observer_object.azimuth_range, observer_object.elevation_range):
+            observed_satellite_positions.append((current_observation_time_skyfield, satellite.at(current_observation_time_skyfield).altaz()))
 
     return observed_satellite_positions
 
 def main():
     
-    # Range of observation using utc time
+    # Range of observation using local time
     observation_start_time = datetime(2023, 9, 6, 21, 50, 0)
     observation_end_time = datetime(2023, 9, 6, 21, 55, 0)
     observation_time_step = timedelta(minutes=5)
@@ -159,12 +178,12 @@ def main():
     # Creating curtin university observer object 
     ## Curtin university is UTC+8 (8 hours ahead of UTC)
     curtin_timezone = pytz.timezone('Etc/GMT-8')
-    curtin_university_observer_object = Observer(name='Curtin', latitude=-32.0061951, longitude=115.8944182, elevation=17.92)
+    curtin_university_observer_object = Observer(name='Curtin', latitude=-32.0061951, longitude=115.8944182, elevation_from_sea=17.92)
 
     curtin_university_observer_object.set_observer_times(observation_start_time, observation_end_time, observation_time_step)
     curtin_university_observer_object.set_observer_range(elevation_range=[0,360], azimuth_range=[0,360])
 
-    adelaide_university_observer_object = Observer(name='Curtin', latitude=-34.921230, longitude=138.599503, elevation=59)
+    adelaide_university_observer_object = Observer(name='Curtin', latitude=-34.921230, longitude=138.599503, elevation_from_sea=59)
 
     adelaide_university_observer_object.set_observer_times(observation_start_time, observation_end_time, observation_time_step)
     adelaide_university_observer_object.set_observer_range(elevation_range=[0,360], azimuth_range=[0,360])
