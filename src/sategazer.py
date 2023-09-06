@@ -3,14 +3,12 @@
 
 """
 
-import configparser
 import ephem 
 import numpy as np
 import warnings
 
 from argparse import ArgumentParser
 from astropy.coordinates import SkyCoord
-from astropy.table import Table
 from astropy import units as u
 
 def convert_coord_to_deg(source_coords):
