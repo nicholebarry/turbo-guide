@@ -2,22 +2,7 @@
 """ Detect satellites passing over the range of astronomical observations
 
 """
-
-import configparser
-import ephem 
 import numpy as np
-import warnings
-
-from argparse import ArgumentParser
-from astropy.coordinates import SkyCoord
-from astropy.table import Table
-from astropy import units as u
-
-# requesting satellit TLE data  
-import requests
-
-# convert string to valid filename 
-from slugify import slugify
 
 # Defining location of observer
 from astropy.coordinates import EarthLocation
@@ -30,9 +15,6 @@ from skyfield.api import load
 
 # Using skyfield to define the observer location
 from skyfield.toposlib import Topos
-
-# Convert from astropy units to units for Topos in skyfield
-import astropy.units as u
 
 # specifying timezone of observer
 import pytz
