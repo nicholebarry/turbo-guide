@@ -48,17 +48,17 @@ class Observer:
         self.start_time = None
         self.end_time = None
         self.time_step = None
-        self.azimuth_range = None
-        self.elevation_range = None
+        self.azimuth_fov = None
+        self.elevation_fov = None
 
     def set_observer_times(self, start_time, end_time, time_step):
         self.start_time = start_time
         self.end_time = end_time
         self.time_step = time_step
 
-    def set_observer_range(self, elevation_range, azimuth_range):
-        self.elevation_range = elevation_range
-        self.azimuth_range = azimuth_range
+    def set_observer_range(self, elevation_fov, azimuth_fov):
+        self.elevation_fov = elevation_fov
+        self.azimuth_fov = azimuth_fov
 
 class Satellite:
     def __init__(self, name):
@@ -83,26 +83,26 @@ def initialise_observer(latitude, longitude, elevation):
 
     return observer_location
 
-def check_satellite_in_range(altitude, azimuth, azimuth_range, elevation_range):
+def check_satellite_in_range(altitude, azimuth, azimuth_fov, elevation_fov):
     """
     Check if a position (given by altitude and azimuth) is within the specified range.
 
     Args:
         altitude (float): The altitude angle in degrees.
         azimuth (float): The azimuth angle in degrees.
-        azimuth_range (tuple): A tuple containing the minimum and maximum azimuth angles in degrees.
-        elevation_range (tuple): A tuple containing the minimum and maximum elevation angles in degrees.
+        azimuth_fov (tuple): A tuple containing the minimum and maximum azimuth angles in degrees.
+        elevation_fov (tuple): A tuple containing the minimum and maximum elevation angles in degrees.
 
     Returns:
         bool: True if the position is within the specified range, False otherwise.
     """
-    min_azimuth, max_azimuth = azimuth_range
-    min_elevation, max_elevation = elevation_range
+    min_azimuth, max_azimuth = azimuth_fov
+    min_elevation, max_elevation = elevation_fov
 
-    is_in_azimuth_range = min_azimuth <= azimuth <= max_azimuth
-    is_in_elevation_range = min_elevation <= altitude <= max_elevation
+    is_in_azimuth_fov = min_azimuth <= azimuth <= max_azimuth
+    is_in_elevation_fov = min_elevation <= altitude <= max_elevation
 
-    return is_in_azimuth_range and is_in_elevation_range
+    return is_in_azimuth_fov and is_in_elevation_fov
 
 def check_satellite_in_fov(altitude_difference, azimuth_difference, azimuth_fov_range, elevation_fov_range):
     """Checks if satellite is within the field of view 
@@ -154,6 +154,7 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
 
         print('current_observation_time_skyfield (utc): ', current_observation_time_skyfield)
         print('satellite: ', satellite)
+        
         # TLE data normally contains  
    
         difference = (satellite - observer).at(current_observation_time_skyfield)
@@ -163,7 +164,8 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
 
         altitude_difference, azimuth_difference, distance_difference = difference.altaz()
 
-        if check_satellite_in_fov(altitude_difference.degrees, azimuth_difference.degrees, observer_object.azimuth_range, observer_object.elevation_range):
+        print(f'satellite altaz: {altitude_difference.degrees} {azimuth_difference.degrees}')
+        if check_satellite_in_fov(altitude_difference.degrees, azimuth_difference.degrees, observer_object.azimuth_fov, observer_object.elevation_fov):
             observed_satellite_positions.append((current_observation_time_skyfield, satellite.at(current_observation_time_skyfield).altaz()))
 
     return observed_satellite_positions
@@ -181,12 +183,12 @@ def main():
     curtin_university_observer_object = Observer(name='Curtin', latitude=-32.0061951, longitude=115.8944182, elevation_from_sea=17.92)
 
     curtin_university_observer_object.set_observer_times(observation_start_time, observation_end_time, observation_time_step)
-    curtin_university_observer_object.set_observer_range(elevation_range=[0,360], azimuth_range=[0,360])
+    curtin_university_observer_object.set_observer_range(elevation_fov=60.0, azimuth_fov=60.0)
 
     adelaide_university_observer_object = Observer(name='Curtin', latitude=-34.921230, longitude=138.599503, elevation_from_sea=59)
 
     adelaide_university_observer_object.set_observer_times(observation_start_time, observation_end_time, observation_time_step)
-    adelaide_university_observer_object.set_observer_range(elevation_range=[0,360], azimuth_range=[0,360])
+    adelaide_university_observer_object.set_observer_range(elevation_fov=60.0, azimuth_fov=60.0)
 
     # Defining satellite object
     ISS_satellite_object = Satellite("ISS (ZARYA)")
