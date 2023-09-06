@@ -138,7 +138,7 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
 
         altitude, azimuth, distance = topocentric_position.altaz()
         # Compare to stellarium
-        print(f'azimuth: {azimuth}\n altitude: {altitude}')
+        print(f'azimuth: {azimuth}\naltitude: {altitude}')
         if check_satellite_in_range(altitude.degrees, azimuth.degrees, observer_object.azimuth_range, observer_object.elevation_range):
             observed_satellite_positions.append((current_observation_time_skyfield, altitude.degrees, azimuth.degrees))
 
@@ -146,18 +146,23 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
 
 def main():
     
+    # Range of observation using utc time
+    observation_start_time = datetime(2023, 9, 6, 16, 25, 0)
+    observation_end_time = datetime(2023, 9, 6, 16, 35, 0)
+    observation_time_step = timedelta(minutes=5)
+
     # Creating curtin university observer object 
     ## Curtin university is UTC+8 (8 hours ahead of UTC)
     curtin_timezone = pytz.timezone('Etc/GMT-8')
     curtin_university_observer_object = Observer(name='Curtin', latitude=-32.0061951, longitude=115.8944182, elevation=17.92)
 
-    # Using the utc time
-    observation_start_time = datetime(2023, 9, 6, 16, 25, 0)
-    observation_end_time = datetime(2023, 9, 6, 16, 35, 0)
-    observation_time_step = timedelta(minutes=5)
-
     curtin_university_observer_object.set_observer_times(observation_start_time, observation_end_time, observation_time_step)
     curtin_university_observer_object.set_observer_range(elevation_range=[0,360], azimuth_range=[0,360])
+
+    adelaide_university_observer_object = Observer(name='Curtin', latitude=-34.921230, longitude=138.599503, elevation=59)
+
+    adelaide_university_observer_object.set_observer_times(observation_start_time, observation_end_time, observation_time_step)
+    adelaide_university_observer_object.set_observer_range(elevation_range=[0,360], azimuth_range=[0,360])
 
     # Defining satellite object
     ISS_satellite_object = Satellite("ISS (ZARYA)")
@@ -168,7 +173,10 @@ def main():
 
         satellite_position_in_curtin_university_range = calculate_satellite_position_in_range(curtin_university_observer_object, satellite)
 
+        satellite_position_in_adelaide_university_range = calculate_satellite_position_in_range(adelaide_university_observer_object, satellite)
+
         print(satellite_position_in_curtin_university_range)
+        print(satellite_position_in_adelaide_university_range)
 
     return 
 
