@@ -1,5 +1,5 @@
 """
-Set up for Sategazer
+Set up for sategazer
 """
 from setuptools import setup, find_packages
 import os
@@ -18,11 +18,11 @@ def get_requirements():
     return requirements
 
 setup(
-    name='Sategazer', # the name of the module
-    packages=['src.Sategazer'], # the location of the module can also use find_packages()
+    name='sategazer', # the name of the module
+    packages=find_packages(), # the location of the module can also use find_packages()
     version='0.1',
     install_requires=get_requirements(),
     python_requires='>=3.8',
     scripts=['src/tools/runme'],
-    entry_points={'console_scripts':['satellite_in_fov=src.Sategazer.stargazer:main']}
+    entry_points={'console_scripts':['satellite_in_fov=sategazer.satellite_observation:main']}
 )
