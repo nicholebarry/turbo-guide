@@ -16,9 +16,6 @@ from skyfield.api import load
 # Using skyfield to define the observer location
 from skyfield.toposlib import Topos
 
-# specifying timezone of observer
-import pytz
-
 class Observer:
     def __init__(self, name, latitude, longitude, elevation_from_sea):
         self.name = name
@@ -166,7 +163,6 @@ def main():
 
     # Creating curtin university observer object 
     ## Curtin university is UTC+8 (8 hours ahead of UTC)
-    # curtin_timezone = pytz.timezone('Etc/GMT-8')
     curtin_university_observer_object = Observer(name='Curtin University', latitude=-32.0061951, longitude=115.8944182, elevation_from_sea=17.92)
 
     curtin_university_observer_object.set_observer_times(observation_start_time, observation_end_time, observation_time_step)
