@@ -1,6 +1,6 @@
 src/data/*
 env/*
-Sategazer.egg-info/*
+src/sategazer.egg-info/*
 *.pyc
 .coverage
 coverage/*

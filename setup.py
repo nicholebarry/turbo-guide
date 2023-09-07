@@ -19,7 +19,8 @@ def get_requirements():
 
 setup(
     name='sategazer', # the name of the module
-    packages=find_packages(), # the location of the module can also use find_packages()
+    packages=find_packages(where='src'), # the location of the module can also use find_packages()
+    package_dir={'': 'src'},
     version='0.1',
     install_requires=get_requirements(),
     python_requires='>=3.8',
