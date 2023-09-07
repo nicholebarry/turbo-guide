@@ -122,7 +122,7 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
                                         longitude_degrees = observer_object.longitude, 
                                         elevation_m = observer_object.elevation_from_sea)
     
-    print('observer:', observer)
+    print(f"{observer_object.name} Skyfield/Topos observer object:", observer)
     # list to store observed satellite positions
     observed_satellite_positions = []
     
@@ -134,19 +134,21 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
         # creating skyfield appropriate current_observation_time
         current_observation_time_skyfield = timescale.utc(current_observation_time.year, current_observation_time.month, current_observation_time.day, current_observation_time.hour, current_observation_time.minute, current_observation_time.second)
 
-        print('current_observation_time_skyfield (utc): ', current_observation_time_skyfield)
-        print('satellite: ', satellite)
+        print('Current_observation_time (Skyfield/Topos type) ', current_observation_time_skyfield)
+        print('Current_observation_time (utc):', current_observation_time_skyfield.utc_strftime())
+        print('Space object (Skyfield/Topos): ', satellite)
         
         # TLE data normally contains  
    
-        difference = (satellite - observer).at(current_observation_time_skyfield)
-        print('difference:', difference)
+        object_difference = (satellite - observer).at(current_observation_time_skyfield)
+        print('object_difference:', object_difference)
 
         # Checking if satellite is in the field of view of the observer
 
-        altitude_difference, azimuth_difference, distance_difference = difference.altaz()
+        altitude_difference, azimuth_difference, distance_difference = object_difference.altaz()
 
-        print(f'satellite altaz: {altitude_difference.degrees} {azimuth_difference.degrees}')
+        print(f'object_difference altaz(): {altitude_difference.degrees} {azimuth_difference.degrees}')
+        
         if check_satellite_in_fov(altitude_difference.degrees, azimuth_difference.degrees, observer_object.azimuth_fov, observer_object.elevation_fov):
             observed_satellite_positions.append((current_observation_time_skyfield, satellite.at(current_observation_time_skyfield).altaz()))
 
