@@ -1,1 +1,7 @@
-src/stations.txt
+src/data/*
+env/*
+mymodule.egg-info/*
+*.pyc
+.coverage
+coverage/*
+.vscode/*
