@@ -20,10 +20,12 @@ In terminal:
 
 git clone -b dev-Jason "https://github.com/nicholebarry/turbo-guide.git"
 
-pip install -r requirements.txt
+#### saves module in python environment and leaves module editable (-e)
+pip install -e .
 
-#### In linux environment
-python3 ./src/sategazer.py
+Type `satllite-in-fov` anywhere and it will create a data folder with the TLE infomation for each satellite (Should add arguments).
+prints the date, observer name, satellite time, satellite azimuth, satellite altitude for selected times in a list (should probably use list of lists or some kind of dictionary).
+
 
 ### Final installation
 Use `pip install git+<link>` or download and run `pip install .`

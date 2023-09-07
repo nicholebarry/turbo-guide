@@ -157,7 +157,7 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
         satellite_azimuth_degrees = satellite_azimuth.degrees
 
         if check_satellite_in_range(satellite_altitude_degrees, satellite_azimuth_degrees, observer_object.azimuth_fov, observer_object.elevation_fov):
-            observed_satellite_positions.append((current_observation_time, observer_object.name, satellite.name, satellite_azimuth_degrees, satellite_altitude_degrees))
+            observed_satellite_positions.append([current_observation_time, observer_object.name, satellite.name, satellite_azimuth_degrees, satellite_altitude_degrees])
     return observed_satellite_positions
 
 def main():
