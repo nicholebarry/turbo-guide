@@ -179,7 +179,7 @@ def main():
     adelaide_university_observer_object.set_observer_times(observation_start_time, observation_end_time, observation_time_step)
     adelaide_university_observer_object.set_observer_range(azimuth_fov=(-360, 360), elevation_fov=(-360, 360))
 
-    # Defining satellite object
+    # Defining satellite object using name from 'http://celestrak.org/NORAD/elements/stations.txt'
     ISS_satellite_object = Satellite("ISS (ZARYA)")
 
     satellite_objects = [ISS_satellite_object]
