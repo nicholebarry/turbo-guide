@@ -139,40 +139,39 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
         print('Space object (Skyfield/Topos): ', satellite)
         
         # TLE data normally contains  
-   
-        object_difference = (satellite - observer).at(current_observation_time_skyfield)
-        print('object_difference:', object_difference)
+    
+        # using TLE of satellite and observer location to find satelite position at observed time
+        satellite_position = (satellite - observer).at(current_observation_time_skyfield)
+        print('satellite_position:', satellite_position)
 
         # Checking if satellite is in the field of view of the observer
 
-        altitude_difference, azimuth_difference, distance_difference = object_difference.altaz()
+        satellite_altitude, satellite_azimuth, satellite_distance = satellite_position.altaz()
+        print(f'satellite_azimuth: {satellite_azimuth}\nsatellite_altitude: {satellite_altitude}')
 
-        print(f'object_difference altaz(): {altitude_difference.degrees} {azimuth_difference.degrees}')
-        
-        if check_satellite_in_fov(altitude_difference.degrees, azimuth_difference.degrees, observer_object.azimuth_fov, observer_object.elevation_fov):
+        if check_satellite_in_range(satellite_altitude.degrees, satellite_azimuth.degrees, observer_object.azimuth_fov, observer_object.elevation_fov):
             observed_satellite_positions.append((current_observation_time_skyfield, satellite.at(current_observation_time_skyfield).altaz()))
-
     return observed_satellite_positions
 
 def main():
     
-    # Range of observation using local time
+    # Range of observation using utc time
     observation_start_time = datetime(2023, 9, 6, 21, 50, 0)
     observation_end_time = datetime(2023, 9, 6, 21, 55, 0)
     observation_time_step = timedelta(minutes=5)
 
     # Creating curtin university observer object 
     ## Curtin university is UTC+8 (8 hours ahead of UTC)
-    curtin_timezone = pytz.timezone('Etc/GMT-8')
+    # curtin_timezone = pytz.timezone('Etc/GMT-8')
     curtin_university_observer_object = Observer(name='Curtin', latitude=-32.0061951, longitude=115.8944182, elevation_from_sea=17.92)
 
     curtin_university_observer_object.set_observer_times(observation_start_time, observation_end_time, observation_time_step)
-    curtin_university_observer_object.set_observer_range(elevation_fov=60.0, azimuth_fov=60.0)
+    curtin_university_observer_object.set_observer_range(elevation_fov=(-15.0, 15.0), azimuth_fov=(0.0, 80.0))
 
     adelaide_university_observer_object = Observer(name='Curtin', latitude=-34.921230, longitude=138.599503, elevation_from_sea=59)
 
     adelaide_university_observer_object.set_observer_times(observation_start_time, observation_end_time, observation_time_step)
-    adelaide_university_observer_object.set_observer_range(elevation_fov=60.0, azimuth_fov=60.0)
+    adelaide_university_observer_object.set_observer_range(elevation_fov=(60.0, ), azimuth_fov=(60.0))
 
     # Defining satellite object
     ISS_satellite_object = Satellite("ISS (ZARYA)")
@@ -181,13 +180,11 @@ def main():
 
     for satellite in satellite_objects:
 
-        # satellite_position_in_curtin_university_range = calculate_satellite_position_in_range(curtin_university_observer_object, satellite)
-        # print(satellite_position_in_curtin_university_range)
+        satellite_position_in_curtin_university_range = calculate_satellite_position_in_range(curtin_university_observer_object, satellite)
+        print(satellite_position_in_curtin_university_range)
 
-        satellite_position_in_adelaide_university_range = calculate_satellite_position_in_range(adelaide_university_observer_object, satellite)
-
-        
-        print(satellite_position_in_adelaide_university_range)
+        # satellite_position_in_adelaide_university_range = calculate_satellite_position_in_range(adelaide_university_observer_object, satellite)        
+        # print(satellite_position_in_adelaide_university_range)
 
     return 
 
