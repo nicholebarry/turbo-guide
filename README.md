@@ -14,6 +14,18 @@ Software which checks the position to satellites within a certain field of view 
 <!-- Not necessary if all necessary files exist -->
 
 ## Installation
+### Developement usage
+
+In terminal:
+
+git clone -b dev-Jason "https://github.com/nicholebarry/turbo-guide.git"
+
+pip install -r requirements.txt
+
+#### In linux environment
+python3 ./src/sategazer.py
+
+### Final installation
 Use `pip install git+<link>` or download and run `pip install .`
 
 ## Usage

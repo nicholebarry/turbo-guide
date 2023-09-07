@@ -16,6 +16,12 @@ from skyfield.api import load
 # Using skyfield to define the observer location
 from skyfield.toposlib import Topos
 
+# convert string to valid filename 
+from slugify import slugify
+
+# make dirs if they do not exist
+from pathlib import Path
+
 class Observer:
     def __init__(self, name, latitude, longitude, elevation_from_sea):
         self.name = name
@@ -105,7 +111,7 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
     # url for satellite object in the TLE format
     # station_url = f"https://celestrak.org/NORAD/elements/gp.php?NAME={satellite_object.name}&FORMAT=TLE"
     all_station_url = 'http://celestrak.org/NORAD/elements/stations.txt'
-    all_satellites = load.tle_file(all_station_url)
+    all_satellites = load.tle_file(all_station_url, filename= Path(f"./data/TLE_files/{slugify(satellite_object.name)}.tle").mkdir(parents=True, exist_ok=True))
 
     # create set of satellite
     all_satellite_sorted_by_names = {sat.name: sat for sat in all_satellites}
