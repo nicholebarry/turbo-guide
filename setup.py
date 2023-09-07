@@ -19,6 +19,10 @@ def get_requirements():
 
 setup(
     name='sategazer', # the name of the module
+    description='package to use satellite information',
+    author='Jason Ahumada',
+    author_email='a1746103@adelaide.edu.au',
+    url='https://github.com/nicholebarry/turbo-guide.git',
     packages=find_packages(where='src'), # the location of the module can also use find_packages()
     package_dir={'': 'src'},
     version='0.1',
