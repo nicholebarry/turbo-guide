@@ -1,5 +1,5 @@
 #! /usr/bin/env python
 
-from sategazer import satellite_observation
+from src.sategazer import satellite_observation
 
 satellite_observation.main()
