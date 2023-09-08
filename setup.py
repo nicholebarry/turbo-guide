@@ -9,8 +9,9 @@ def get_requirements():
     Read the requirements from a file
     """
     requirements = []
-    if os.path.exists('requirements.txt'):
-        with open('requirements.txt') as req:
+    requirements_filename = 'docs/python-requirements.txt'
+    if os.path.exists(requirements_filename):
+        with open(requirements_filename) as req:
             for line in req:
                 # skip commented lines
                 if not line.startswith('#'):
@@ -18,8 +19,8 @@ def get_requirements():
     return requirements
 
 setup(
-    name='sategazer', # the name of the module
-    description='package to use satellite information',
+    name='FD_cloud_detection', # the name of the module
+    description='Module that manages the cloud detection using the fluorescence telescopes at the Pierre Auger Observatory',
     author='Jason Ahumada',
     author_email='a1746103@adelaide.edu.au',
     url='https://github.com/nicholebarry/turbo-guide.git',
