@@ -21,7 +21,10 @@ from slugify import slugify
 
 # make dirs if they do not exist
 from pathlib import Path
+# Look into @dataclass if object just stores things (https://docs.python.org/3/library/dataclasses.html)
+# regular class if object does things
 
+# For global variables look at https://pypi.org/project/ConfigArgParse/
 class Observer:
     def __init__(self, name, latitude, longitude, elevation_from_sea):
         self.name = name
@@ -110,6 +113,7 @@ def calculate_satellite_position_in_range(observer_object, satellite_object):
 
     # url for satellite object in the TLE format
     # station_url = f"https://celestrak.org/NORAD/elements/gp.php?NAME={satellite_object.name}&FORMAT=TLE"
+    # when you have location that could change, want to keep as global variable
     all_station_url = 'http://celestrak.org/NORAD/elements/stations.txt'
     all_satellites = load.tle_file(all_station_url, filename= Path(f"./data/TLE_files/{slugify(satellite_object.name)}.tle").mkdir(parents=True, exist_ok=True))
 
